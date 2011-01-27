@@ -1,12 +1,23 @@
 from midiutil.MidiFile import MIDIFile
 
-mapping = {'C' : 60, 'D' : 62, 'E' : 64, 'F' : 65, 'G' : 67, 'A' : 69, 'B' : 71}
+mapping = { 'C' : 60,
+            'C#': 61,
+            'D' : 62,
+            'D#': 63,
+            'E' : 64,
+            'F' : 65,
+            'F#': 66,
+            'G' : 67,
+            'G#': 68,
+            'A' : 69,
+            'A#': 70,
+            'B' : 71}
 
 def convertToMIDI(piece):
     mfile = MIDIFile(1)
     track = 0
     time = 0
-    tempo = 120
+    tempo = 160
 
     mfile.addTrackName(track, time, "test")
     mfile.addTempo(track, time, tempo)
@@ -18,7 +29,9 @@ def convertToMIDI(piece):
     i = 0
     while i < len(piece)-1:
         # Get the corresponding pitch for the note
-        pitch = mapping[piece[i]]
+        pitch = mapping[piece[i][0]]
+        diff = int(piece[i][-1]) - 4
+        pitch += diff * 12
 
         # If we're dealing with a continued note
         if piece[i] == piece[i+1]:
@@ -54,6 +67,7 @@ def convertToMIDI(piece):
 
 def prettyPrint(genobj):
     generation = genobj.get()
+    scores = genobj.getScores()
     print "Generation", genobj.getAge(), "\n", "============="
     for i in range(0, len(generation)):
         genstr = ""
@@ -63,4 +77,4 @@ def prettyPrint(genobj):
                 genstr += "  "
             else:
                 genstr += " "
-        print i, "->", genstr
+        print i, "->", genstr, "\b->", scores[i]

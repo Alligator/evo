@@ -6,9 +6,8 @@ menu = """1 - Start a new generation
 2 - Exit"""
 
 gMenu = """1 - Step
-2 - Score only
+2 - MIDI Output
 3 - Discard"""
-
 def main():
     while True:
         print "\n", menu
@@ -27,11 +26,15 @@ def genMenu():
         if cmd == '1':
             pass
         elif cmd == '2':
-            pass
+            midi()
         elif cmd == '3':
             return
         else:
             pass
+
+def midi():
+    piece = raw_input("Enter piece ID > ")
+    utils.convertToMIDI(generation.get()[int(piece)])
 
 def newGeneration():
     generation.init()
