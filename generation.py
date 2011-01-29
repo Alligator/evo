@@ -54,8 +54,8 @@ def score(piece):
     mj = 0
     pt = 0
     for i in range(0, len(piece) - 1):
-        current = piece[i][:2].strip('345')
-        next = piece[i+1][:2].strip('345')
+        current = piece[i][:-1]
+        next = piece[i+1][:-1]
 
         #print "C:", current, " N:", next
 
