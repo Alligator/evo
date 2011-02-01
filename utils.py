@@ -81,7 +81,7 @@ def prettyPrint(genobj):
 
 def export(piece, filename):
     output = ""
-    f = open(filename, 'w')
+    f = open(filename + ".dna", 'w')
     for i in range(0, len(piece)):
         output += piece[i] + ":"
     f.write(output[:-1])
