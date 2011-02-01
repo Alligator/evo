@@ -7,7 +7,8 @@ menu = """1 - Start a new generation
 
 gMenu = """1 - Step
 2 - MIDI Output
-3 - Discard"""
+3 - Export DNA
+4 - Discard"""
 def main():
     while True:
         print "\n", menu
@@ -28,6 +29,8 @@ def genMenu():
         elif cmd == '2':
             midi()
         elif cmd == '3':
+            export()
+        elif cmd == '4':
             return
         else:
             pass
@@ -35,6 +38,12 @@ def genMenu():
 def midi():
     piece = raw_input("Enter piece ID > ")
     utils.convertToMIDI(generation.get()[int(piece)])
+
+def export():
+    piece = raw_input("Enter piece ID > ")
+    filename = raw_input("Enter a filename > ")
+    utils.export(generation.get()[int(piece)], filename)
+    print "File written"
 
 def newGeneration():
     generation.init()

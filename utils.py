@@ -78,3 +78,11 @@ def prettyPrint(genobj):
             else:
                 genstr += " "
         print i, "->", genstr, "\b->", scores[i]
+
+def export(piece, filename):
+    output = ""
+    f = open(filename, 'w')
+    for i in range(0, len(piece)):
+        output += piece[i] + ":"
+    f.write(output[:-1])
+    f.close()
