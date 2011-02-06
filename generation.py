@@ -36,13 +36,14 @@ def generatePiece():
 #generate a population of 8 pieces
 def init():
     clear()
-    for i in range(0, 8):
+    for i in range(0, 16):
         gen.append(generatePiece())
         genScore.append(0)
     scoreGen()
 
 def step():
-    scoreGen()
+    global genAge
+    genAge += 1
 
 def scoreGen():
     for i in range(0,len(gen)):
@@ -92,5 +93,7 @@ def getAge():
 
 #clear the generation
 def clear():
+    global genAge
     del gen[:]
     del genScore[:]
+    genAge = 0

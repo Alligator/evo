@@ -47,7 +47,7 @@ def export():
 
 def newGeneration():
     generation.init()
-    utils.prettyPrint(generation)
+    print utils.prettyPrint(generation.get(), generation.getScores())
     genMenu()
 
 def step():

@@ -65,19 +65,19 @@ def convertToMIDI(piece):
     mfile.writeFile(bfile)
     bfile.close()
 
-def prettyPrint(genobj):
-    generation = genobj.get()
-    scores = genobj.getScores()
-    print "Generation", genobj.getAge(), "\n", "============="
+def prettyPrint(generation, scores):
+    out = ''
     for i in range(0, len(generation)):
-        genstr = ""
+        genstr = ''
         for j in range(0, len(generation[i])):
-            genstr += generation[i][j]
-            if len(generation[i][j]) == 2:
-                genstr += "  "
-            else:
-                genstr += " "
-        print i, "->", genstr, "\b->", scores[i]
+            genstr += generation[i][j][0]
+            genstr += generation[i][j][1:].rjust(2) + '  '
+            #if len(generation[i][j]) == 2:
+            #    genstr += "  "
+            #else:
+            #    genstr += " "
+        out += str(i).rjust(2) + ' | ' + genstr[:-1] + '| ' + str(scores[i]) + '\n'
+    return out
 
 def export(piece, filename):
     output = ""
