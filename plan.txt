@@ -1,0 +1,13 @@
+evolution
+    age
+    step()
+    select(n, p)
+    crossover(a, b, mask)
+    generation
+        individual
+            fitness
+            dna
+            getDna()
+            getFitness()
+        getIndividuals()
+        getRandom()
