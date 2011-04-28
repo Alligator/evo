@@ -2,113 +2,74 @@
 # Represents a single generation of individuals
 import random
 import utils
+from math import sqrt
 from individual import Individual
 
 class Generation:
     # All possible notes (NOT all possible pitches)
-    notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    population = []
+    scales = [
+        # Major
+        ['C','D','E','F','G','A','B'],
+        # Chromatic
+        ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
+        # Pentatonic
+        ['C', 'D', 'E', 'G', 'A']
+        ]
 
     # createGeneration()
-    # Create a new generation filled with random data
-    def createGeneration(self):
-        pass
+    # Create a ne"w generation filled with random data
+    def createGeneration(self, size):
+        for i in range(0, size):
+            self.population.append(Individual())
 
-    # createIndividual
-    # Creates a new individual filled with random data
-    def createIndividual(self):
-        individual = []
-        for i in range(0, 16):
-            random.seed()
-            note = random.choice(self.notes)
-            octave = random.randint(3, 5)
-            individual.append(note + str(octave))
-        return individual
-
-    def __init__(self, individuals=[]):
+    # formatGeneration()
+    # Returns a formatted printable string showing
+    # the generation and it's scores.
+    def formatGeneration(self, pop=population):
+        width = len(pop[0].dna)*4
+        fmtstring = '{0: <'+str(width)+'}{1}'
+        out = fmtstring.format('DNA', '| Fitness') + "\n"
+        out += ('{0:-^'+str(width)+'}').format('') + '+--------\n'
+        i = 0
+        for ind in pop:
+            i += 1
+            for note in ind.dna:
+                out += note
+                if len(note) == 2:
+                    out += '  '
+                else:
+                    out += ' '
+            out += '| {0:2.3f}'.format(ind.fitness) + "\n"
+        return out
+ 
+    # evaluateFitness()
+    # Evaluate the fitness of the population
+    def evaluateFitness(self):
+        # For each individual
+        for ind in self.population:
+            scores = []
+            # For each scale to be checked
+            for scale in self.scales:
+                currentScore = 0
+                # For the notes in each individua
+                for i in range(0, len(ind.dna)-1):
+                    current = ind.dna[i][:-1]
+                    next = ind.dna[i+1][:-1]
+                    # If the current note pair both belong to the same scale
+                    if current and next in scale:
+                        # Increase the score
+                        currentScore += 1
+                scores.append(currentScore)
+            # Standard deviation in one line. Eeep.
+            ind.fitness = sqrt(sum([(i - float(sum(scores))/len(scores))**2 for i in scores])/len(scores))
+ 
+    # Constructor
+    # The population can be given as a list of individuals, or
+    # generated.
+    def __init__(self, size, individuals=[]):
         if not individuals: #if individuals is empty
-            self.createGeneration()
+            self.createGeneration(size)
         else:
             self.individuals = individuals
-##generate a single note
-#def generateNote():
-#    # C4 = middle C
-#    global notes
-#    random.seed()
-#    rand = random.randint(0,6)
-#    note = notes[rand]
-#    return note
-#
-##generate single pitch
-#def generatePitch():
-#    random.seed()
-#    return str(random.randint(3,5))
-#
-##generate a 16 note long random piece of music
-#def generatePiece():
-#    piece = []
-#    for i in range(0,16):
-#        fullNote = generateNote() + generatePitch()
-#        piece.append(fullNote)
-#
-#    return piece
-#
-##generate a population of 8 pieces
-#def init():
-#    clear()
-#    for i in range(0, 16):
-#        gen.append(generatePiece())
-#        genScore.append(0)
-#    scoreGen()
-#
-#def step():
-#    global genAge
-#    genAge += 1
-#    selection()
-#
-#def scoreGen():
-#    for i in range(0,len(gen)):
-#        piece = gen[i]
-#        genScore[i] = score(piece)
-#
-#def score(piece):
-#    score = 0
-#    mj = 0
-#    pt = 0
-#    for i in range(0, len(piece) - 1):
-#        current = piece[i][:-1]
-#        next = piece[i+1][:-1]
-#
-#        #print "C:", current, " N:", next
-#
-#        if current and next in major:
-#            mj += 1
-#        if current and next in pent:
-#            pt += 1
-#
-#    #print mj, ":", pt
-#    score = abs(mj - pt)
-#    return score
-#
-##returns the relative distance between two notes
-#def getDistance(n1, n2):
-#    i1 = notes.index(n1)
-#    i2 = notes.index(n2)
-#    if i1 < i2:
-#        return i2 - i1
-#    elif i1 == i2:
-#        return 0
-#    else:
-#        de = (len(notes) - 1) - i1
-#        ds = i2 + 1
-#        return de + ds
-#
-#def get():
-#    return gen
-#
-#def getScores():
-#    return genScore
-#
-#def getAge():
-#    return genAge
-#
-##clear the generation
+        self.evaluateFitness()
