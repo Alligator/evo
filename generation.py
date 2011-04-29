@@ -14,7 +14,9 @@ class Generation:
         # Chromatic
         ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
         # Pentatonic
-        ['C', 'D', 'E', 'G', 'A']
+        ['C', 'D', 'E', 'G', 'A'],
+        # Hexatonic
+        ['C','D','E','F#','G#','A#']
         ]
 
     # createGeneration()
@@ -26,7 +28,9 @@ class Generation:
     # formatGeneration()
     # Returns a formatted printable string showing
     # the generation and it's scores.
-    def formatGeneration(self, pop=population):
+    def formatGeneration(self, pop=[]):
+        if not pop:
+            pop = self.population
         width = len(pop[0].dna)*4
         fmtstring = '{0: <'+str(width)+'}{1}'
         out = fmtstring.format('DNA', '| Fitness') + "\n"
@@ -48,6 +52,7 @@ class Generation:
     def evaluateFitness(self):
         # For each individual
         for ind in self.population:
+            #print ind.dna
             scores = []
             # For each scale to be checked
             for scale in self.scales:
@@ -64,12 +69,16 @@ class Generation:
             # Standard deviation in one line. Eeep.
             ind.fitness = sqrt(sum([(i - float(sum(scores))/len(scores))**2 for i in scores])/len(scores))
  
+    def setPopulation(self, population):
+        self.population = population
+        self.evaluateFitness()
+
     # Constructor
     # The population can be given as a list of individuals, or
     # generated.
-    def __init__(self, size, individuals=[]):
-        if not individuals: #if individuals is empty
+    def __init__(self, size, population=[]):
+        if not population: #if individuals is empty
             self.createGeneration(size)
         else:
-            self.individuals = individuals
+            self.population = population
         self.evaluateFitness()

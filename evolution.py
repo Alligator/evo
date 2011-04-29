@@ -1,5 +1,5 @@
 # Evolution
-import generation
+from generation import Generation
 import individual
 import random
 import sys
@@ -9,6 +9,7 @@ class Evolution:
     # Crossover masks
     SINGLE_POINT = '00000000000000001111111111111111'
     MULTI_POINT =  '00000000001111111111100000000000'
+    UNIFORM =      '01010101010101010101010101010101'
     age = 0
 
     # select()
@@ -29,7 +30,7 @@ class Evolution:
 
         # Now we select the winner!
         winner = sorted((random.random() * m[0], m[1]) for m in members)
-        return winner[-1][1]
+        return winner[-2][1]
 
     # crossover()
     # Takes two dna sequences and crosses them over according to
@@ -44,22 +45,36 @@ class Evolution:
         return dna
 
     def __init__(self, size):
-        self.currentGeneration = generation.Generation(size)
+        self.currentGeneration = Generation(size)
 
 if __name__ == '__main__':
-    size = 20
+    size = 50
+    mutationRate = 0.85
     e = Evolution(size)
-    while True:
-        print e.currentGeneration.formatGeneration()
-        if raw_input() == 'q':
-            sys.exit(0)
+    f = open('results.txt', 'w')
+    for n in range(0, 20000):
+        #print e.currentGeneration.formatGeneration()
+        f.write(str(sum([i.fitness for i in e.currentGeneration.population])/len(e.currentGeneration.population)))
+        f.write('\n')
+        sys.stdout.write('\r' + str(n))
+        sys.stdout.flush()
+        #if raw_input() == 'q':
+        #    sys.exit(0)
         newpop = []
         for i in range(0, size):
-            a = e.select(4, 0.5)
-            b = e.select(4, 0.5)
-            newpop.append(individual.Individual(e.crossover(a.dna, b.dna, e.SINGLE_POINT)))
+            a = e.select(20, 0.5)
+            b = e.select(20, 0.5)
+            new = e.crossover(a.dna, b.dna, e.UNIFORM)
+            if random.random() > mutationRate:
+                notes = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
+                for i in range (0, len(new)):
+                    if random.random > mutationRate:
+                        note = random.choice(notes)
+                        note += str(random.randint(3, 5))
+                        new[i] = note
+
+            newpop.append(individual.Individual(new))
             #print a.dna, b.dna, newpop[-1].dna
-        print e.currentGeneration.formatGeneration(newpop)
-        e.currentGeneration = False
-        #e.currentGeneration = generation.Generation(len(newpop), newpop)
+        e.currentGeneration.setPopulation(newpop)
+    f.close()
 
