@@ -68,6 +68,7 @@ class Generation:
                 scores.append(currentScore)
             # Standard deviation in one line. Eeep.
             ind.fitness = sqrt(sum([(i - float(sum(scores))/len(scores))**2 for i in scores])/len(scores))
+            #ind.fitness = sorted(scores)[0]
  
     def setPopulation(self, population):
         self.population = population

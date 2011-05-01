@@ -7,9 +7,12 @@ from individual import Individual
 
 class Evolution:
     # Crossover masks
-    SINGLE_POINT = '00000000000000001111111111111111'
-    MULTI_POINT =  '00000000001111111111100000000000'
-    UNIFORM =      '01010101010101010101010101010101'
+    masks = { 'single' : '00000000000000001111111111111111',
+              'multi'  : '00000000001111111111100000000000',
+              'uniform1':'01010101010101010101010101010101',
+              'uniform2':'00110011001100110011001100110011',
+              'uniform3':'11110000111100001111000011110000'
+            }
     age = 0
 
     # select()
@@ -30,15 +33,16 @@ class Evolution:
 
         # Now we select the winner!
         winner = sorted((random.random() * m[0], m[1]) for m in members)
-        return winner[-2][1]
+        return winner[-1][1]
 
     # crossover()
     # Takes two dna sequences and crosses them over according to
     # the specified mask. Returns a dna sequence.
     def crossover(self, a, b, mask):
         dna = []
+        flip = random.choice(['1', '0'])
         for i in range(0, len(mask)):
-            if mask[i] == '0':
+            if mask[i] == flip:
                 dna.append(a[i])
             else:
                 dna.append(b[i])
@@ -48,24 +52,38 @@ class Evolution:
         self.currentGeneration = Generation(size)
 
 if __name__ == '__main__':
-    size = 50
-    mutationRate = 0.85
+
+    # size mr g ts tp ct
+    size = int(sys.argv[1])
+    mutationRate = float(sys.argv[2])
+    generations = int(sys.argv[3])
+    tournamentSize = int(sys.argv[4])
+    tournamentProb = float(sys.argv[5])
+    crossoverType = sys.argv[6]
+    filename = 's{0}_mr{1:2.2f}_g{2}_ts{3}_tp{4:2.2f}_c{5}.txt'.format(size, mutationRate, generations, tournamentSize, 
+                                                            tournamentProb, crossoverType)
     e = Evolution(size)
-    f = open('results.txt', 'w')
-    for n in range(0, 20000):
+    f = open(filename, 'w')
+    f.write('size: {0} mutation: {1} generations: {2} tsize: {3} tprob: {4} crossover: {5}\n'.format(
+        size, mutationRate, generations, tournamentSize, tournamentProb, crossoverType))
+    for n in range(0, generations):
         #print e.currentGeneration.formatGeneration()
-        f.write(str(sum([i.fitness for i in e.currentGeneration.population])/len(e.currentGeneration.population)))
-        f.write('\n')
+        avg = sum([i.fitness for i in e.currentGeneration.population])/len(e.currentGeneration.population)
+        best = sorted([i.fitness for i in e.currentGeneration.population])[-1]
         sys.stdout.write('\r' + str(n))
+        if n % (generations/1000) == 0:
+            f.write(str(n) + "," + str(avg) + "," + str(best) + '\n')
+            sys.stdout.write('\t' + str(avg) + '\t' + str(best))
         sys.stdout.flush()
         #if raw_input() == 'q':
         #    sys.exit(0)
         newpop = []
         for i in range(0, size):
-            a = e.select(20, 0.5)
-            b = e.select(20, 0.5)
-            new = e.crossover(a.dna, b.dna, e.UNIFORM)
-            if random.random() > mutationRate:
+            a = e.select(tournamentSize, tournamentProb)
+            b = e.select(tournamentSize, tournamentProb)
+            #new = e.crossover(a.dna, b.dna, random.choice([e.UNIFORM, e.SINGLE_POINT, e.MULTI_POINT]))
+            new = e.crossover(a.dna, b.dna, e.masks[crossoverType])
+            if random.random() < mutationRate:
                 notes = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
                 for i in range (0, len(new)):
                     if random.random > mutationRate:
